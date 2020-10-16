@@ -28,6 +28,7 @@ class Tab{
     }
 
     stopDwell(){
+        console.log("기존의 체류시간 측정을 멈춥니다.");
         clearInterval(this.interval);
         this.isDwell = false;
     }
@@ -57,19 +58,12 @@ class Tab{
         });
     }
 }
-
-function create_tab(tab){
-    console.log("create");
-}
-    
+ 
 //기존의 dwell을 하고 있다면 멈춘다. 그리고 현재 보고 있는 탭이 TabsObj에 들어있는 탭이라면 이 탭의 dwell을 활성화 시킨다.
 function activate_tab(activeInfo){ 
-    console.log("activate");
-    
     TabObjs.some(function(e){
         if(e.isDwell === true){
             e.stopDwell();
-            console.log("기존의 체류시간 측정을 멈춥니다.");
             return true;
         }
     });
@@ -99,7 +93,6 @@ function getUrlVars(href)
 
 
 function getUrls(searchWord){
-    console.log("request");
     fetch(`http://127.0.0.1:3000/getinfo/${searchWord}`)
     .then(function(response){
         return response.json();
@@ -119,7 +112,6 @@ function getUrls(searchWord){
 
 function update_tab(tabId, changeInfo, tab){      
     if (tab.url !== undefined && changeInfo.status == "complete" && tab.status == "complete"){
-        console.log("update");
         //TabObjs에 있는지 확인
         if(tab.url.includes('www.google.com/search?')){
                 console.log("현재 탭은 검색탭입니다. 검색어를 추천합니다");
@@ -129,8 +121,8 @@ function update_tab(tabId, changeInfo, tab){
         let existElement = TabObjs.some(function(e){
             return (e.tabId === tab.id);
         });
-        console.log("존재하나요? : "+existElement);
-        console.log(TabObjs);
+        //console.log("존재하나요? : "+existElement);
+        //console.log(TabObjs);
         //현재 탭이 검색탭이라면 검색어 추천도 여기서
         if((!existElement) &&(tab.openerTabId !== undefined) && (tab.title !== '새 탭')){
             //새로운 탭이 만들어지면 현재 탭이 어떤 탭으로 부터 만들어졌는지 가지고 온다.  async로 바꿀 수 있으면 바꾸자 
@@ -160,7 +152,6 @@ function update_tab(tabId, changeInfo, tab){
 
     
 function remove_tab(tabId, removeInfo){
-    console.log("remove");
     TabObjs = removeElement(tabId);
     
 }
@@ -180,7 +171,6 @@ function removeElement(tabId){
 
 
 function init(){
-    //console.log(handler);
     chrome.tabs.onCreated.addListener(create_tab);
     chrome.tabs.onUpdated.addListener(update_tab);
     chrome.tabs.onActivated.addListener(activate_tab);
@@ -188,15 +178,3 @@ function init(){
 }
 
 init(); 
-/*
-async function main() {
-    for (x = 0; x < 5; x++) {
-        console.log('start of my script');
-        let tab = await chromeTabsCreateAsync({ url: "about:blank", active: false });
-        console.log('Tab created: ' + tab.id);
-        console.log('end of my script');
-    }
-}
-
-main();
-*/
