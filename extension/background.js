@@ -11,14 +11,14 @@ class Tab{
         this.isDwell = false;
         this.interval = undefined;
         this.title = title;
-        //this.openerTabId = openerTabId;
-        this.getUrlVars();
+        this.searchWord = getUrlVars(url).q;
     }
 
     recordTime(){
         this.dwell+=1; 
         console.log(this.title+ " : " + this.dwell);
     }
+
     startDwell(){
         //https://stackoverflow.com/questions/18283095/integer-returning-as-nan-when-added
         //위에꺼 보고 해결
@@ -32,21 +32,8 @@ class Tab{
         this.isDwell = false;
     }
 
-    getUrlVars()
-    {
-        let vars = [], hash;
-        let hashes = this.url.slice(this.url.indexOf('?') + 1).split('&');
-        for(var i = 0; i < hashes.length; i++)
-        {
-            hash = hashes[i].split('=');
-            vars.push(hash[0]);
-            vars[hash[0]] = hash[1];
-        }
-        this.searchWord = vars.q;
-    }
-
-
     sendTabInfo(){
+        console.log(this.searchWord);
         let data = JSON.stringify({
             'tabId' : this.tabId, 
             'url' : this.url, 
@@ -75,7 +62,6 @@ function create_tab(tab){
     console.log("create");
 }
     
-
 //기존의 dwell을 하고 있다면 멈춘다. 그리고 현재 보고 있는 탭이 TabsObj에 들어있는 탭이라면 이 탭의 dwell을 활성화 시킨다.
 function activate_tab(activeInfo){ 
     console.log("activate");
@@ -98,17 +84,46 @@ function activate_tab(activeInfo){
     
 }
 
+function getUrlVars(href)
+{
+    let vars = [], hash;
+    let hashes = href.slice(href.indexOf('?') + 1).split('&');
+    for(var i = 0; i < hashes.length; i++)
+    {
+        hash = hashes[i].split('=');
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];z
+    }
+    return vars;
+}
+
+
+function getUrls(searchWord){
+    console.log("request");
+    fetch(`http://127.0.0.1:3000/getinfo/${searchWord}`)
+    .then(function(response){
+        return response.json();
+    })
+    .catch(function(error){
+        console.log(error);
+    })
+    .then(function(myJson){
+        console.log(JSON.stringify(myJson));
+    });
+}
     //탭이 업데이트 될 때 이전탭이 검색탭이였는지 검사한다. 
     //refresh같은 경우에도 이렇게 뜨는 경우가 있어서 
     //tabId로 판별
     //검색탭에서 검색탭을 호출했을때도 체킹하기 
     //Update하면 탭을 작업큐에 넣어서 다른 탭이 Update되더라도 체킹할 수 있게 하자 .
+
 function update_tab(tabId, changeInfo, tab){      
     if (tab.url !== undefined && changeInfo.status == "complete" && tab.status == "complete"){
         console.log("update");
         //TabObjs에 있는지 확인
         if(tab.url.includes('www.google.com/search?')){
                 console.log("현재 탭은 검색탭입니다. 검색어를 추천합니다");
+                getUrls(getUrlVars(tab.url).q); //해당 함수는 Promise로 비동기 방식으로 작동한다. 실행 순서 보장 X 
                 return;
         } 
         let existElement = TabObjs.some(function(e){
