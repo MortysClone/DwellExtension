@@ -11,7 +11,7 @@ class Tab{
         this.isDwell = false;
         this.interval = undefined;
         this.title = title;
-        this.searchWord = getUrlVars(url).q;
+        this.searchWord = getUrlVars(this.url).q;
     }
 
     recordTime(){
@@ -92,7 +92,7 @@ function getUrlVars(href)
     {
         hash = hashes[i].split('=');
         vars.push(hash[0]);
-        vars[hash[0]] = hash[1];z
+        vars[hash[0]] = hash[1];
     }
     return vars;
 }
