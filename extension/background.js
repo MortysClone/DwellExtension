@@ -109,14 +109,15 @@ function getUrls(searchWord){
     //tabId로 판별
     //검색탭에서 검색탭을 호출했을때도 체킹하기 
     //Update하면 탭을 작업큐에 넣어서 다른 탭이 Update되더라도 체킹할 수 있게 하자 .
-
 function update_tab(tabId, changeInfo, tab){      
     if (tab.url !== undefined && changeInfo.status == "complete" && tab.status == "complete"){
         //TabObjs에 있는지 확인
         if(tab.url.includes('www.google.com/search?')){
                 console.log("현재 탭은 검색탭입니다. 검색어를 추천합니다");
                 getUrls(getUrlVars(tab.url).q); //해당 함수는 Promise로 비동기 방식으로 작동한다. 실행 순서 보장 X 
-
+                /*
+                여기서 URL을 받아와서 hello.html의 DOM을 조작해서 ㅎㅎ
+                */
                 return;
         } 
         let existElement = TabObjs.some(function(e){
@@ -130,10 +131,7 @@ function update_tab(tabId, changeInfo, tab){
             chrome.tabs.get(tab.openerTabId, function(openerTab){
                 if(openerTab.url.includes('www.google.com/search?')){
                     console.log("이전탭은 검색탭입니다.");
-                    TabObjs.push(new Tab(tab.id, tab.title, tab.url)); 
-                    /*
-                    여기서 URL을 받아와서 hello.html의 DOM을 조작해서 ㅎㅎ
-                    */
+                    TabObjs.push(new Tab(tab.id, tab.title, tab.url));  
                     //컨트롤 클릭으로 create -> update, 활성화 시키지 않고 탭을 여는 경우가 있어 chrome tabs query로 현재 탭이 활성화 상태인지 확인 후 드웰 체크
                     if(!tab.active){
                         console.log("새로 띄운 탭을 보고 있지 않습니다."); 
