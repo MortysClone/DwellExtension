@@ -61,6 +61,11 @@ class Tab{
  
 //기존의 dwell을 하고 있다면 멈춘다. 그리고 현재 보고 있는 탭이 TabsObj에 들어있는 탭이라면 이 탭의 dwell을 활성화 시킨다.
 function activate_tab(activeInfo){ 
+    /*chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {greeting: "hello"}, function(response) {
+          console.log(response.farewell);
+        });
+      }); */
     TabObjs.some(function(e){
         if(e.isDwell === true){
             e.stopDwell();
@@ -101,6 +106,9 @@ function getUrls(searchWord){
         console.log(error);
     })
     .then(function(myJson){
+        /*
+            여기서 URL을 받아와서 hello.html의 DOM을 조작해서 ㅎㅎ
+        */
         console.log(JSON.stringify(myJson));
     });
 }
@@ -115,17 +123,10 @@ function update_tab(tabId, changeInfo, tab){
         if(tab.url.includes('www.google.com/search?')){
                 console.log("현재 탭은 검색탭입니다. 검색어를 추천합니다");
                 getUrls(getUrlVars(tab.url).q); //해당 함수는 Promise로 비동기 방식으로 작동한다. 실행 순서 보장 X 
-                /*
-                여기서 URL을 받아와서 hello.html의 DOM을 조작해서 ㅎㅎ
-                */
-                return;
         } 
         let existElement = TabObjs.some(function(e){
             return (e.tabId === tab.id);
         });
-        //console.log("존재하나요? : "+existElement);
-        //console.log(TabObjs);
-        //현재 탭이 검색탭이라면 검색어 추천도 여기서
         if((!existElement) &&(tab.openerTabId !== undefined) && (tab.title !== '새 탭')){
             //새로운 탭이 만들어지면 현재 탭이 어떤 탭으로 부터 만들어졌는지 가지고 온다.  async로 바꿀 수 있으면 바꾸자 
             chrome.tabs.get(tab.openerTabId, function(openerTab){

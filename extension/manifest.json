@@ -2,12 +2,18 @@
     "manifest_version": 2,
     "name": "dwell_test",
     "version": "2.0",
-    "permissions" : ["tabs", "history", "activeTab", "background"],
+    "permissions" : ["tabs", "history", "activeTab", "background", "<all_urls>"],
     "browser_action": {
         "default_popup": "hello.html"
       },
     "background": {
       "scripts": ["background.js"],
       "persistent": false
-    }
+    },
+    "content_scripts": [{
+      "matches": ["*://*/*"],
+      "css": [],
+      "js" : ["ui.js"]
+    }]
+
 }
