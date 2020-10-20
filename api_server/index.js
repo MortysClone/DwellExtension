@@ -9,20 +9,16 @@ const app = express();
 app.use(require("body-parser").json())
 app.use(cors());
 
-/*
-let tmp = {
-                'tabId' : tab.id,
-                'title' : tab.title,  //해당 탭의 title
-                'url' : tab.url, //해당 탭의 url 
-                'date' : new Date(),  //해당 탭을 연 날짜 
-                'search_word' : getUrlVars(tab.url).q, //해당 탭을 만들어내게 한 검색 키워드 
-                'dwell' : 0, //dwell time
-                'now_dwell' : true //현재 dwell을 측정하고 있는가 아닌가
-            }
-*/
+
 app.post("/store", function(req, res){
-    console.log("store info");
-    console.log(req.body);
+    console.log("=========================================");
+    console.log("탭에 대한 정보가 저장되었습니다.");
+    console.log(`탭 Title : ${req.body['title']}`);
+    console.log(`탭 URL : ${req.body['url']}`);
+    console.log(`탭 날짜 : ${req.body['date']}`);
+    console.log(`탭 체류시간 : ${req.body.dwell}`);
+    console.log("=========================================\n");
+    //console.log(req.body);
     return res.json({
         'value' : true
     });
@@ -30,9 +26,17 @@ app.post("/store", function(req, res){
 
 //search는 검색어
 app.get("/getinfo/:search", function(req, res){
-    console.log("get info about search : " + req.params.search);
+    const urls = ["www.naver.com", "www.youtube.com", "www.google.com"];
+    console.log("=========================================");
+    console.log("요청된 검색어  : " + req.params.search);
+    console.log("해당 검색어에 대한 추천 URL을 생성합니다.\n");
+    console.log("[추천 URL List]");
+    console.log(`[+] : ${urls[0]}`); 
+    console.log(`[+] : ${urls[1]}`); 
+    console.log(`[+] : ${urls[2]}`); 
+    console.log("=========================================\n");
     return res.json({
-        'value' : ["www.naver.com", "www.youtube.com", "www.google.com"]
+        'value' : urls
     });
 });
 

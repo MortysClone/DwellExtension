@@ -1,5 +1,9 @@
 
 
+
+//const host = "133.186.151.97";
+const host = "127.0.0.1";
+const port = 3000;
 let TabObjs = []; 
 
 class Tab{
@@ -42,7 +46,7 @@ class Tab{
             'searchWord' : this.searchWord,
             'dwell' : this.dwell
         });
-        fetch("http://127.0.0.1:3000/store", {
+        fetch(`http://${host}:${port}/store`, {
             headers: {'Content-Type': 'application/json'},
             method : 'POST',
             body: data
@@ -98,7 +102,7 @@ function getUrlVars(href)
 
 
 function getUrls(searchWord){
-    fetch(`http://127.0.0.1:3000/getinfo/${searchWord}`)
+    fetch(`http://${host}:${port}/getinfo/${searchWord}`)
     .then(function(response){
         return response.json();
     })
