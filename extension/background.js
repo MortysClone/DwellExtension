@@ -113,6 +113,12 @@ function getUrls(searchWord){
         /*
             여기서 URL을 받아와서 hello.html의 DOM을 조작해서 ㅎㅎ
         */
+       /*
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+            chrome.tabs.sendMessage(tabs[0].id, {greeting: "hello"}, function(response) {
+                console.log(response.farewell);
+            });
+        });*/
         console.log(JSON.stringify(myJson));
     });
 }
