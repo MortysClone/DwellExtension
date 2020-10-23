@@ -1,7 +1,4 @@
 
-
-
-//const host = "133.186.151.97";
 const host = "127.0.0.1";
 const port = 3000;
 let TabObjs = []; 
@@ -65,11 +62,6 @@ class Tab{
  
 //기존의 dwell을 하고 있다면 멈춘다. 그리고 현재 보고 있는 탭이 TabsObj에 들어있는 탭이라면 이 탭의 dwell을 활성화 시킨다.
 function activate_tab(activeInfo){ 
-    /*chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, {greeting: "hello"}, function(response) {
-          console.log(response.farewell);
-        });
-      }); */
     TabObjs.some(function(e){
         if(e.isDwell === true){
             e.stopDwell();
@@ -101,27 +93,6 @@ function getUrlVars(href)
 }
 
 
-function getUrls(searchWord){
-    fetch(`http://${host}:${port}/getinfo/${searchWord}`)
-    .then(function(response){
-        return response.json();
-    })
-    .catch(function(error){
-        console.log(error);
-    })
-    .then(function(myJson){
-        /*
-            여기서 URL을 받아와서 hello.html의 DOM을 조작해서 ㅎㅎ
-        */
-       /*
-        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-            chrome.tabs.sendMessage(tabs[0].id, {greeting: "hello"}, function(response) {
-                console.log(response.farewell);
-            });
-        });*/
-        console.log(JSON.stringify(myJson));
-    });
-}
     //탭이 업데이트 될 때 이전탭이 검색탭이였는지 검사한다. 
     //refresh같은 경우에도 이렇게 뜨는 경우가 있어서 
     //tabId로 판별
@@ -183,7 +154,40 @@ function removeElement(tabId){
 }
 
 
+//catch 하기 
+function getUrls(searchWord){
+    return fetch(`http://${host}:${port}/getinfo/${searchWord}`)
+    .then(function(response){
+        return response.json();
+    })
+    .then(function(json){
+        return json;
+    });
+
+}
+
+function sendPopup(port){
+    console.log("Connected .....");
+    port.onMessage.addListener(function(msg) {
+         console.log("message recieved" + msg);
+         chrome.tabs.query({active: true, lastFocusedWindow: true}, tabs => {
+             if(tabs[0].url.includes('www.google.com/search?')){
+                port.postMessage("Search Tab");
+                getUrls(getUrlVars(tabs[0].url).q)
+                .then(function(result){
+                    console.log(result['value']);
+                    port.postMessage(result['value']);
+                });
+             } else{
+                port.postMessage("Not Search Tab");
+             }
+        });
+    });
+}
+
 function init(){
+    //chrome.extension.onConnect.addListener(connectedCallback);
+    chrome.extension.onConnect.addListener(sendPopup);
     chrome.tabs.onUpdated.addListener(update_tab);
     chrome.tabs.onActivated.addListener(activate_tab);
     chrome.tabs.onRemoved.addListener(remove_tab);
