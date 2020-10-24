@@ -4,7 +4,7 @@ const port = 3000;
 let TabObjs = []; 
 
 class Tab{
-    constructor(tabId, title, url){
+    constructor(tabId, title, url, openerTabUrl){
         this.tabId = tabId; 
         this.url = url; 
         this.date = new Date();
@@ -12,7 +12,8 @@ class Tab{
         this.isDwell = false;
         this.interval = undefined;
         this.title = title;
-        this.searchWord = getUrlVars(this.url).q;
+        this.searchWord = getUrlVars(openerTabUrl).q;
+        this.openerTabUrl = openerTabUrl;
     }
 
     recordTime(){
@@ -35,9 +36,10 @@ class Tab{
     }
 
     sendTabInfo(){
+        console.log(this.title);
         console.log(this.searchWord);
         let data = JSON.stringify({
-            'tabId' : this.tabId, 
+            'title' : this.title, 
             'url' : this.url, 
             'date' : this.date, 
             'searchWord' : this.searchWord,
@@ -79,6 +81,10 @@ function activate_tab(activeInfo){
     
 }
 
+chrome.windows.onRemoved.addListener(function(windowId){
+    //alert("브라우저가 갑작스럽게 멈췄습니다. "); //갑작스러운 클라이언트 종료시 모든 정보 서버로 전송
+});
+
 function getUrlVars(href)
 {
     let vars = [], hash;
@@ -92,19 +98,20 @@ function getUrlVars(href)
     return vars;
 }
 
-
-    //탭이 업데이트 될 때 이전탭이 검색탭이였는지 검사한다. 
-    //refresh같은 경우에도 이렇게 뜨는 경우가 있어서 
-    //tabId로 판별
-    //검색탭에서 검색탭을 호출했을때도 체킹하기 
-    //Update하면 탭을 작업큐에 넣어서 다른 탭이 Update되더라도 체킹할 수 있게 하자 .
+/*
+탭이 업데이트 될 때 이전탭이 검색탭이였는지 검사한다. 
+refresh같은 경우에도 이렇게 뜨는 경우가 있어서 
+tabId로 판별
+검색탭에서 검색탭을 호출했을때도 체킹하기 
+Update하면 탭을 작업큐에 넣어서 다른 탭이 Update되더라도 체킹할 수 있게 하자
+*/
 function update_tab(tabId, changeInfo, tab){      
     if (tab.url !== undefined && changeInfo.status == "complete" && tab.status == "complete"){
         //TabObjs에 있는지 확인
-        if(tab.url.includes('www.google.com/search?')){
+        /*if(tab.url.includes('www.google.com/search?')){
                 console.log("현재 탭은 검색탭입니다. 검색어를 추천합니다");
                 getUrls(getUrlVars(tab.url).q); //해당 함수는 Promise로 비동기 방식으로 작동한다. 실행 순서 보장 X 
-        } 
+        } */
         let existElement = TabObjs.some(function(e){
             return (e.tabId === tab.id);
         });
@@ -113,7 +120,7 @@ function update_tab(tabId, changeInfo, tab){
             chrome.tabs.get(tab.openerTabId, function(openerTab){
                 if(openerTab.url.includes('www.google.com/search?')){
                     console.log("이전탭은 검색탭입니다.");
-                    TabObjs.push(new Tab(tab.id, tab.title, tab.url));  
+                    TabObjs.push(new Tab(tab.id, tab.title, tab.url, openerTab.url));
                     //컨트롤 클릭으로 create -> update, 활성화 시키지 않고 탭을 여는 경우가 있어 chrome tabs query로 현재 탭이 활성화 상태인지 확인 후 드웰 체크
                     if(!tab.active){
                         console.log("새로 띄운 탭을 보고 있지 않습니다."); 
@@ -133,6 +140,8 @@ function update_tab(tabId, changeInfo, tab){
         }
     }
 }
+
+
 
     
 function remove_tab(tabId, removeInfo){
@@ -160,12 +169,16 @@ function getUrls(searchWord){
     .then(function(response){
         return response.json();
     })
+    .catch(function(error){
+        return {"value" : ["FETCH FAILED"]};
+    })
     .then(function(json){
         return json;
     });
 
 }
 
+//팝업창 클릭시 백그라운드 쪽으로 신호를 주고 백그라운드는 신호를 받고 검색 url을 넘김
 function sendPopup(port){
     console.log("Connected .....");
     port.onMessage.addListener(function(msg) {
@@ -179,14 +192,29 @@ function sendPopup(port){
                     port.postMessage(result['value']);
                 });
              } else{
+                 //]해당 탭을 TabObjs에서 검사하고 있다면 searchword가지고와서 보내기 
+                 TabObjs.some(function(e){
+                    if(e.tabId === tabs[0].id){
+                        getUrls(getUrlVars(e.openerTabUrl).q)
+                        .then(function(result){
+                            port.postMessage(result['value']);
+                        });
+                        return true;
+                    }
+                })
                 port.postMessage("Not Search Tab");
              }
         });
     });
 }
 
+function exitChrome(windowId){
+    alert("chrome is exited");
+}
+
 function init(){
-    //chrome.extension.onConnect.addListener(connectedCallback);
+    //chrome이 종료되었을 때 
+    //chrome.windows.onRemoved.addListener(exitChrome);
     chrome.extension.onConnect.addListener(sendPopup);
     chrome.tabs.onUpdated.addListener(update_tab);
     chrome.tabs.onActivated.addListener(activate_tab);

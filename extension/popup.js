@@ -12,5 +12,4 @@ port.onMessage.addListener(function(msg) {
         li.appendChild(span);
         ul.appendChild(li);
     });
-    console.log("message recieved" + msg);
 });
