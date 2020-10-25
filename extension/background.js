@@ -6,13 +6,13 @@ let TabObjs = [];
 class Tab{
     constructor(tabId, title, url, openerTabUrl){
         this.tabId = tabId; 
-        this.url = url; 
-        this.date = new Date();
+        this.url = decodeURI(url);
+        this.date = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
         this.dwell = 0;
         this.isDwell = false;
         this.interval = undefined;
         this.title = title;
-        this.searchWord = getUrlVars(openerTabUrl).q;
+        this.searchWord = decodeURI(getUrlVars(openerTabUrl).q);
         this.openerTabUrl = openerTabUrl;
     }
 
@@ -23,7 +23,6 @@ class Tab{
 
     startDwell(){
         //https://stackoverflow.com/questions/18283095/integer-returning-as-nan-when-added
-        //위에꺼 보고 해결
         console.log("해당 객체에 대해 체류시간을 측정합니다");
         this.isDwell = true;
         this.interval = setInterval(this.recordTime.bind(this), 1000);
@@ -83,6 +82,12 @@ function activate_tab(activeInfo){
 
 chrome.windows.onRemoved.addListener(function(windowId){
     //alert("브라우저가 갑작스럽게 멈췄습니다. "); //갑작스러운 클라이언트 종료시 모든 정보 서버로 전송
+    TabObjs.forEach(function(e){
+        if(e.isDwell === true){
+            e.stopDwell();
+        }
+        e.sendTabInfo();
+    })
 });
 
 function getUrlVars(href)
