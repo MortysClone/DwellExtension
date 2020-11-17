@@ -1,0 +1,127 @@
+</html>
+
+
+<html>
+
+<head>
+</head>
+
+<body>
+    <style>
+        body {
+            height: 300px;
+            width: 220px;
+            background-color: gray;
+        }
+        
+        #header-content {
+            color: white;
+            font-size: 2em;
+            font-family: sans-serif;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        #middle-content {
+            color: white;
+            font-size: 2em;
+            font-family: sans-serif;
+            text-align: center;
+            font-weight: 1;
+        }
+        
+        #list {
+            overflow: hidden;
+            margin: 0px;
+            padding: 0px;
+        }
+        
+        #list>li {
+            display: block;
+            padding: 1px;
+            margin: 1px;
+        }
+        
+        #list>li>a {
+            -webkit-transition: background 1s ease-out;
+            -moz-transition: background 1s ease-out;
+            -o-transition: background 1s ease-out;
+            transition: background 1s ease-out;
+            background-size: 1px 200px;
+            cursor: pointer;
+            width: 150px;
+            height: 100px;
+            color: white;
+            font-size: 1.5em;
+            font-family: sans-serif;
+            text-decoration: none;
+        }
+        
+        #list>li>a:Hover {
+            background-position: 100px;
+            background-color: rgb(190, 185, 196);
+            color: black;
+            font-size: 1.5em;
+            font-family: sans-serif;
+            text-decoration: none;
+        }
+        
+        a.tip {
+            text-decoration: none
+        }
+        
+        a.tip:hover {
+            cursor: help;
+            position: relative;
+        }
+        
+        a.tip span {
+            display: none;
+        }
+        
+        a.tip:hover span {
+            border: #c0c0c0 1px dotted;
+            padding: 5px 20px 5px 5px;
+            display: block;
+            z-index: 100;
+            background: #f0f0f0 no-repeat 100% 5%;
+            left: 0px;
+            margin: 10px;
+            width: 250px;
+            top: 20px;
+            left: 10px;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: bold;
+        }
+    </style>
+    <header id="header">
+        <div class="header-container">
+            <h1 id="header-content">Dwell Extension</h1>
+        </div>
+    </header>
+    <div class="middle-container">
+        <p id="middle-content">Referral URL</p>
+    </div>
+    <div class="content-container">
+        <ul id="list">
+            <li>
+                <a href="https://naver.com" class="tip">www.naver.com<span>Views : 32pv<br>PickTime : 18:00pm<br>DwellTime : 32s</span></a>
+            </li>
+            <li>
+                <a href="https://google.com" class="tip">www.google.com<span>Views : 323pv<br>PickTime : 12:00pm<br>DwellTime : 139s</span></a>
+            </li>
+            <li>
+                <a href="https://gutte.tistory.com" class="tip">gutte.tistory.com<span>Views : 12pv<br>PickTime : 02:00pm<br>DwellTime : 12s</span></a>
+            </li>
+        </ul>
+    </div>
+    <footer class="footer-container">
+        <p>
+            Contact : github.com/MortysClone/dwellExtension
+        </p>
+    </footer>
+    <script src="popup.js"></script>
+</body>
+
+</html>
