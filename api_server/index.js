@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql');
 const app = express(); 
+const recommend = require('./recommend');
 
 app.use(require("body-parser").json());
 app.use(cors());
@@ -11,21 +12,27 @@ class DB{
     constructor(){
         this.connection = mysql.createConnection({
             host : "localhost",
-            user : '',
+            user : 'tuuna',
             password : '',
             database : 'dwell'
         });
     }
 
     getInfo(searchWord){
-        let sql = `SELECT * FROM search WHERE searchWord=${searchWord}`;
-        this.connection.query(sql, function(error, rows, fileds){
-            if(error){
-                console.log("getInfo() error : "+error);
-            } else{
-                console.log("[+]Success : Get Data in Database!");
-            }
-        })
+        /*
+        https://stackoverflow.com/questions/34930771/why-is-this-undefined-inside-class-method-when-using-promises
+        */
+        let that = this;
+        return new Promise(function(resolve, reject){
+            let sql = `SELECT * FROM search WHERE searchWord='${searchWord}'`;
+            that.connection.query(sql, function(err, rows, fields){
+                if(err){
+                    return reject(err);
+                }else{
+                    resolve(rows);
+                }
+            });
+        }); 
     }
 
     storeInfo(tab){
@@ -69,22 +76,48 @@ app.post("/store", function(req, res){
 
 //search는 검색어
 app.get("/getinfo/:search", function(req, res){
-    const urls = ["www.naver.com", "www.youtube.com", "www.google.com"];
+    const eachUrl = {} 
+    let data = [];
+    const urls = [];
     console.log("=========================================");
     console.log("요청된 검색어  : " + req.params.search);
-    console.log("해당 검색어에 대한 추천 URL을 생성합니다.\n");
-    console.log("[추천 URL List]");
-    console.log(`[+] : ${urls[0]}`); 
-    console.log(`[+] : ${urls[1]}`); 
-    console.log(`[+] : ${urls[2]}`); 
-    console.log("=========================================\n");
-    return res.json({
-        'value' : urls
-    });
+    db.getInfo(req.params.search)
+    .then(function(rows){
+        rows.map(function(e){
+            eachUrl[e['url']] = {'dwellTime' : []}; 
+        });
+        rows.map(function(e){
+            eachUrl[e['url']]['dwellTime'].push(e['dwellTime']);
+        });
+        for(let key in eachUrl){
+            if(eachUrl.hasOwnProperty(key)){
+                eachUrl[key]['dwellTime'] = recommend.filterGarbage(eachUrl[key]['dwellTime']);
+                //eachUrl[key]['dwellTime'] = recommend.filterOutliers(eachUrl[key]['dwellTime']);
+                /* data processing */
+                data = recommend.processing(eachUrl);
+            }
+        }
+        console.log(data);
+        /*
+        suggestion url 
+        */        
+        console.log("해당 검색어에 대한 추천 URL을 생성합니다.\n");
+        console.log("[추천 URL List]");
+        console.log(`[+] : ${urls[0]}`); 
+        console.log(`[+] : ${urls[1]}`); 
+        console.log(`[+] : ${urls[2]}`); 
+        console.log("=========================================\n");
+        return res.json({
+            'values' : urls
+        })
+    })
+    .catch(function(error){
+        console.log(error);
+        return res.json({
+            'values' : []
+        });
+    })
 });
-
-
-
 
 function init(){
     app.listen(3000, function(){
