@@ -123,7 +123,7 @@ function update_tab(tabId, changeInfo, tab){
         if((!existElement) &&(tab.openerTabId !== undefined) && (tab.title !== '새 탭')){
             //새로운 탭이 만들어지면 현재 탭이 어떤 탭으로 부터 만들어졌는지 가지고 온다.  async로 바꿀 수 있으면 바꾸자 
             chrome.tabs.get(tab.openerTabId, function(openerTab){
-                if(openerTab.url.includes('www.google.com/search?')){
+                if(openerTab.url.includes('www.google.com/search?') && (tab.url.includes('www.google.com/search?') == false)){
                     console.log("이전탭은 검색탭입니다.");
                     TabObjs.push(new Tab(tab.id, tab.title, tab.url, openerTab.url));
                     //컨트롤 클릭으로 create -> update, 활성화 시키지 않고 탭을 여는 경우가 있어 chrome tabs query로 현재 탭이 활성화 상태인지 확인 후 드웰 체크
