@@ -198,16 +198,21 @@ function sendPopup(port){
                 });
              } else{
                  //]해당 탭을 TabObjs에서 검사하고 있다면 searchword가지고와서 보내기 
+                 let check = false;
                  TabObjs.some(function(e){
                     if(e.tabId === tabs[0].id){
                         getUrls(getUrlVars(e.openerTabUrl).q)
                         .then(function(result){
                             port.postMessage(result['value']);
                         });
+                        check = true;
                         return true;
                     }
                 })
-                port.postMessage("Not Search Tab");
+                if(check == false){
+                    port.postMessage([]);
+                }
+                check = false;
              }
         });
     });

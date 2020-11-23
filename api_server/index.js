@@ -78,7 +78,6 @@ app.post("/store", function(req, res){
 app.get("/getinfo/:search", function(req, res){
     const eachUrl = {} 
     let data = [];
-    const urls = [];
     console.log("=========================================");
     console.log("요청된 검색어  : " + req.params.search);
     db.getInfo(req.params.search)
@@ -97,24 +96,41 @@ app.get("/getinfo/:search", function(req, res){
                 data = recommend.processing(eachUrl);
             }
         }
-        console.log(data);
         /*
-        suggestion url 
+        suggestion url usin data
         */        
+        let urls = [
+            {
+                'url' : "www.google.com", 
+                "dwellTime" : 32, 
+                "views" : 123
+            },
+            {
+                'url' : "www.naver.com", 
+                "dwellTime" : 323, 
+                "views" : 72
+            },
+            {
+                'url' : "www.daum.com", 
+                "dwellTime" : 1222, 
+                "views" : 12
+            }
+        ]
+        /*
         console.log("해당 검색어에 대한 추천 URL을 생성합니다.\n");
         console.log("[추천 URL List]");
         console.log(`[+] : ${urls[0]}`); 
         console.log(`[+] : ${urls[1]}`); 
         console.log(`[+] : ${urls[2]}`); 
-        console.log("=========================================\n");
+        console.log("=========================================\n"); */
         return res.json({
-            'values' : urls
+            'value' : urls
         })
     })
     .catch(function(error){
         console.log(error);
         return res.json({
-            'values' : []
+            'value' : []
         });
     })
 });
