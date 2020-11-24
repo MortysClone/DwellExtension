@@ -38,8 +38,8 @@ function init() {
             a.setAttribute('href', e['url']);
             a.setAttribute('class', "tip");
             const span = document.createElement("span");
-            span.innerHTML = "dwell time : " + e['dwellTime'] + "<br>" + "views : " + e['views'];
-            a.innerText = e['url'];
+            span.innerHTML = "dwell time : " + e['avg_dwelltime'] + "<br>" + "views : " + e['views'];
+            a.innerText = e['title'];
             a.appendChild(span);
             li.appendChild(a);
             ul.appendChild(li);

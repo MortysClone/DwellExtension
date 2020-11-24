@@ -3,6 +3,7 @@ const cors = require('cors');
 const mysql = require('mysql');
 const app = express(); 
 const recommend = require('./recommend');
+const suggest = require('./suggest');
 
 app.use(require("body-parser").json());
 app.use(cors());
@@ -36,6 +37,8 @@ class DB{
     }
 
     storeInfo(tab){
+        console.log(tab['url']);
+        console.log(tab['searchWord']);
         let sql = "INSERT INTO search (searchWord, date, dwellTime, title, url) VALUES (?,?,?,?,?)";
         let params = [tab['searchWord'], tab['date'], tab['dwellTime'], tab['title'], tab['url']];
         this.connection.query(sql, params, function(error, rows, fields){
@@ -58,7 +61,7 @@ app.post("/store", function(req, res){
         'url' : req.body['url'],
         'date' : req.body['date'],
         'dwellTime' : req.body['dwell'],
-        'searchWord' : req.body['searchWord']
+        'searchWord' : decodeURIComponent(req.body['searchWord'])
     };
     console.log("=========================================");
     console.log("탭에 대한 정보가 저장되었습니다.");
@@ -87,35 +90,25 @@ app.get("/getinfo/:search", function(req, res){
         });
         rows.map(function(e){
             eachUrl[e['url']]['dwellTime'].push(e['dwellTime']);
+            eachUrl[e['url']]['title'] = e['title'];
         });
         for(let key in eachUrl){
             if(eachUrl.hasOwnProperty(key)){
                 eachUrl[key]['dwellTime'] = recommend.filterGarbage(eachUrl[key]['dwellTime']);
                 //eachUrl[key]['dwellTime'] = recommend.filterOutliers(eachUrl[key]['dwellTime']);
                 /* data processing */
-                data = recommend.processing(eachUrl);
+                
             }
         }
+        data = recommend.processing(eachUrl);
+        //console.log(data);
+        data = suggest.getRank(data);
+        //console.log(data);
+        data = recommend.sorting(data);
+        //console.log(data);
         /*
         suggestion url usin data
         */        
-        let urls = [
-            {
-                'url' : "www.google.com", 
-                "dwellTime" : 32, 
-                "views" : 123
-            },
-            {
-                'url' : "www.naver.com", 
-                "dwellTime" : 323, 
-                "views" : 72
-            },
-            {
-                'url' : "www.daum.com", 
-                "dwellTime" : 1222, 
-                "views" : 12
-            }
-        ]
         /*
         console.log("해당 검색어에 대한 추천 URL을 생성합니다.\n");
         console.log("[추천 URL List]");
@@ -124,7 +117,7 @@ app.get("/getinfo/:search", function(req, res){
         console.log(`[+] : ${urls[2]}`); 
         console.log("=========================================\n"); */
         return res.json({
-            'value' : urls
+            'value' : data
         })
     })
     .catch(function(error){

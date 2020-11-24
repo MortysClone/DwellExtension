@@ -66,34 +66,23 @@ exports.processing = function(values){
             data.push({
                 "url" : key, 
                 "views" : views,
-                "rank" : 0,
-                "avg" : Math.floor(avg/views)
+                "rank_score" : 0,
+                "avg_dwelltime" : Math.floor(avg/views),
+                'title' : values[key]['title']
             });
         }
     }
     return data;
 }
+
+exports.sorting = function(values){
+    let sortedValues = values.filter(function(e){
+        return (e['rank_score'] == 1);
+    });
+    return sortedValues; 
+}
+
 /*
 이상치를 제거해서 나온 평균값을 사용 
 아래 data값은 사이트들을 평균값 내서 가지고 온거임
 */
-let data = [
-    {
-        "url" : "~~",
-        "avg" : 32, 
-        "views" : 30,
-        "rank" : 0,
-    },
-    {
-        "url" : "~~~", 
-        "avg" : 300, 
-        "views" : 13,
-        "rank" : 0, 
-    },
-    {
-        "url" : "~~~~~~",
-        "avg" : 1000, 
-        "views" : 7,
-        "rank" : 0
-    }
-];
