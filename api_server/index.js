@@ -82,7 +82,7 @@ app.get("/getinfo/:search", function(req, res){
     const eachUrl = {} 
     let data = [];
     console.log("=========================================");
-    console.log("요청된 검색어  : " + req.params.search);
+    
     db.getInfo(req.params.search)
     .then(function(rows){
         rows.map(function(e){
@@ -100,22 +100,24 @@ app.get("/getinfo/:search", function(req, res){
                 
             }
         }
+        console.log("요청된 검색어  : " + req.params.search);
+        /*
+            요청된 검색어를 기반으로 데이터베이스에서 값을 뺴내 온 후
+            getRank()함수에 필요한 데이터에 맞게 가공한다.
+        */
         data = recommend.processing(eachUrl);
-        //console.log(data);
+        /*
+            getRank()함수를 통해 rank_score를 매긴다. 
+        */
         data = suggest.getRank(data);
-        //console.log(data);
+        /*
+            sorting() 함수를 통해 rank_score가 1인것만 뽑아낸다. 
+        */
         data = recommend.sorting(data);
-        //console.log(data);
+        console.log(data);
         /*
-        suggestion url usin data
-        */        
-        /*
-        console.log("해당 검색어에 대한 추천 URL을 생성합니다.\n");
-        console.log("[추천 URL List]");
-        console.log(`[+] : ${urls[0]}`); 
-        console.log(`[+] : ${urls[1]}`); 
-        console.log(`[+] : ${urls[2]}`); 
-        console.log("=========================================\n"); */
+            client 에게 sorting된 데이터를 전달한다. 
+        */
         return res.json({
             'value' : data
         })
