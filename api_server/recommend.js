@@ -59,7 +59,9 @@ exports.processing = function(values) {
     for (let key in values) {
         if (values.hasOwnProperty(key)) {
             //console.log(values[key]['DwellTime']);
-            console.log(values);
+            if (values[key]['dwellTime'].length === 0) {
+                continue;
+            }
             let avg = values[key]['dwellTime'].reduce(function add(sum, currValue) {
                 return sum + currValue;
             }, 0);
