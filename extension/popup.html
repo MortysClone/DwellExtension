@@ -4,32 +4,13 @@
 <html>
 
 <head>
+    <link rel="stylesheet" href="photon.css">
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 
 <body>
     <style>
-        body {
-            height: 300px;
-            width: 220px;
-            background-color: gray;
-        }
-        
-        #header-content {
-            color: white;
-            font-size: 2em;
-            font-family: sans-serif;
-            font-weight: bold;
-            text-align: center;
-        }
-        
-        #middle-content {
-            color: white;
-            font-size: 2em;
-            font-family: sans-serif;
-            text-align: center;
-            font-weight: 1;
-        }
-        
         #list {
             overflow: hidden;
             margin: 0px;
@@ -40,6 +21,8 @@
             display: block;
             padding: 1px;
             margin: 1px;
+            padding: 10px;
+            margin: 10px;
         }
         
         #list>li>a {
@@ -51,7 +34,7 @@
             cursor: pointer;
             width: 150px;
             height: 100px;
-            color: white;
+            color: black;
             font-size: 1em;
             font-family: sans-serif;
             text-decoration: none;
@@ -95,24 +78,51 @@
             font-weight: bold;
         }
     </style>
-    <header id="header">
-        <div class="header-container">
-            <h1 id="header-content">Dwell Extension</h1>
-        </div>
-    </header>
-    <div class="middle-container">
-        <p id="middle-content">Referral URL</p>
-    </div>
-    <div class="content-container">
-        <ul id="list">
+    <div class="window">
+        <div class="window-content">
+            <!--Browser Template-->
+            <div class="pane ">
+                <header class="toolbar toolbar-header ">
+                    <div class="row ">
+                        <div class="column left">
+                            <button class="btn" onclick="location.href='index.html'"><span class="dot " style="background:#ED594A; "></span></button>
+                            <!--<button class="btn "><span class="dot " style="background:#FDD800; "></span></button>
+                                            <button class="btn "><span class="dot " style="background:#5AC05A; "></span></button>-->
+                        </div>
+                        <div class="column middle ">
+                            <input id="mid" type="text " value="http://www.w3schools.com ">
+                        </div>
+                        <div class="column right ">
+                            <div style="float:right ">
+                                <button class="btn ">
+                                        <span class="bar"></span>
+                                        <span class="bar"></span>
+                                        <span class="bar"></span>
+                                    </button>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+                <div class="pane">
+                    <div class="window-content ">
+                        <div class="content">
+                            <h3>Recommend Sites</h3>
+                            <p>Best Chrome Extension App.</p>
+                            <div class="topnav">
+                                <div class="search-container">
+                                    <input id="input-box" type="text" placeholder="Search.." name="search ">
+                                    <button type="submit"><i class="fa fa-search"></i></button>
+                                </div>
+                            </div>
+                            <ul id="list">
 
-        </ul>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <footer class="footer-container">
-        <p>
-            Contact : github.com/MortysClone/dwellExtension
-        </p>
-    </footer>
     <script src="popup.js"></script>
 </body>
 

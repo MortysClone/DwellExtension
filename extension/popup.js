@@ -21,18 +21,19 @@ function init() {
         /* const id = document.querySelector("#middle-content");
         id.innerText = msg[0]['url']; */
         const ul = document.querySelector("#list");
-        if(msg.length == 0){
+        const id = document.querySelector("#input-box");
+        if (msg['value'].length == 0) {
             const p = document.createElement("p");
             p.innerText = "No Search Tab";
             p.setAttribute('id', "middle-content");
             ul.appendChild(p);
             return;
         }
-        
+
         /*
         e is json - dwellTime, views, url 
         */
-        msg.forEach(function(e) {
+        msg['value'].forEach(function(e) {
             const li = document.createElement("li");
             const a = document.createElement("a");
             a.setAttribute('href', e['url']);
@@ -44,6 +45,7 @@ function init() {
             li.appendChild(a);
             ul.appendChild(li);
         });
+        id.value = msg['search'];
     });
 }
 
